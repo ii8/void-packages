@@ -1,0 +1,37 @@
+# Template file for 'abaddon'
+pkgname=abaddon
+version=0.2.1
+revision=1
+build_wrksrc="abaddon-${version}"
+build_style=cmake
+configure_args="-DUSE_KEYCHAIN=OFF -DENABLE_QRCODE_LOGIN=OFF"
+hostmakedepends="pkg-config"
+makedepends="gtkmm-devel libcurl-devel sqlite-devel openssl-devel json-c++
+ libsecret-devel libhandy1-devel opus-devel libsodium-devel spdlog
+ rnnoise-devel ixwebsocket"
+short_desc="Discord client with voice support made with C++ and GTK 3"
+maintainer="ii8 <murray.calavera@protonmail.com>"
+license="GPL-3.0-or-later"
+homepage="https://github.com/uowuo/abaddon"
+_miniaudiover=0.11.21
+distfiles="
+ https://github.com/uowuo/abaddon/archive/refs/tags/v${version}.tar.gz
+ https://github.com/mackron/miniaudio/archive/refs/tags/${_miniaudiover}.tar.gz
+"
+checksum="
+ 407d14bc7659c65eca1c5266fb96a60b1e169b31c122159ae7f54e69a86e0b45
+ 6afb5c231613d2fab4f1c668b7243ff9a7d6d78a7f5a2692c133f026fe508506
+"
+patch_args="-Np1 -d ${build_wrksrc}"
+
+post_extract() {
+	rmdir abaddon-${version}/subprojects/miniaudio
+	mv miniaudio-${_miniaudiover} abaddon-${version}/subprojects/miniaudio
+}
+
+do_install() {
+	vbin build/abaddon
+	vmkdir usr/share/abaddon
+	vcopy res/res usr/share/abaddon
+	vcopy res/css usr/share/abaddon
+}
